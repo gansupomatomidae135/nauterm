@@ -21,11 +21,13 @@ import 'package:nauterm/ui/nauterm_context_menu.dart';
 import 'package:nauterm/window/native_windowing.dart';
 
 void main() {
-  setUp(() {
+  setUp(() async {
     final binding = TestWidgetsFlutterBinding.ensureInitialized();
     binding.platformDispatcher.localeTestValue = const Locale('en');
     setAppLanguage(AppLanguage.english);
-    NautermLocalizations.current = const NautermLocalizations(Locale('en'));
+    NautermLocalizations.current = await NautermLocalizations.load(
+      const Locale('en'),
+    );
   });
   tearDown(() {
     TestWidgetsFlutterBinding.instance.platformDispatcher

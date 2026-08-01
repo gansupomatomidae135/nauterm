@@ -17,9 +17,11 @@ import 'package:nauterm/window/native_windowing.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 void main() {
-  setUp(() {
+  setUp(() async {
     setAppLanguage(AppLanguage.english);
-    NautermLocalizations.current = const NautermLocalizations(Locale('en'));
+    NautermLocalizations.current = await NautermLocalizations.load(
+      const Locale('en'),
+    );
   });
 
   testWidgets('settings render in Simplified Chinese', (
@@ -127,7 +129,10 @@ void main() {
         home: SettingsPanel(detectExternalEditors: false),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('settings-language-select')));
     await tester.pumpAndSettle();
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -88,6 +89,13 @@ class NautermLocalizations {
 
   static const LocalizationsDelegate<NautermLocalizations> delegate =
       _NautermLocalizationsDelegate();
+  static final Map<String, NautermLocalizations> _loaded = {};
+
+  static String _cacheKey(Locale locale) =>
+      locale.languageCode == 'zh' ? 'zh_CN' : 'en';
+
+  static NautermLocalizations? cached(Locale locale) =>
+      _loaded[_cacheKey(locale)];
 
   static NautermLocalizations of(BuildContext context) {
     return Localizations.of<NautermLocalizations>(
@@ -152,12 +160,14 @@ class NautermLocalizations {
         );
       }
     }
-    return NautermLocalizations(
+    final localizations = NautermLocalizations(
       locale,
       messages: Map.unmodifiable(messages),
       patterns: List.unmodifiable(patterns),
       keysByEnglishFallback: Map.unmodifiable(keysByEnglishFallback),
     );
+    _loaded[_cacheKey(locale)] = localizations;
+    return localizations;
   }
 }
 
@@ -200,11 +210,17 @@ class _NautermLocalizationsDelegate
       locale.languageCode == 'en' || locale.languageCode == 'zh';
 
   @override
-  Future<NautermLocalizations> load(Locale locale) =>
-      NautermLocalizations.load(locale).then((localizations) {
-        NautermLocalizations.current = localizations;
-        return localizations;
-      });
+  Future<NautermLocalizations> load(Locale locale) {
+    final cached = NautermLocalizations.cached(locale);
+    if (cached != null) {
+      NautermLocalizations.current = cached;
+      return SynchronousFuture(cached);
+    }
+    return NautermLocalizations.load(locale).then((localizations) {
+      NautermLocalizations.current = localizations;
+      return localizations;
+    });
+  }
 
   @override
   bool shouldReload(_NautermLocalizationsDelegate old) => false;
