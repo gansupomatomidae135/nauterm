@@ -15,6 +15,26 @@ void main() {
     ]);
   });
 
+  test('English delegate loads namespaced messages used by the UI', () async {
+    final previousLanguage = appLanguage;
+    addTearDown(() => setAppLanguage(previousLanguage));
+
+    setAppLanguage(AppLanguage.english);
+    final english = await NautermLocalizations.delegate.load(
+      const Locale('en'),
+    );
+
+    expect(english.tr('settings.label.syncKey'), 'Sync Key');
+    expect(
+      english.tr('settings.sync.key.localAvailable.label'),
+      'Sync DEK available locally',
+    );
+    expect(
+      tr('settings.label.masterKeyIsNotStored'),
+      'Master Key is not stored',
+    );
+  });
+
   test(
     'translates known strings and falls back to English source text',
     () async {

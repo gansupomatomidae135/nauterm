@@ -3795,11 +3795,17 @@ class _SyncKeyDetailsDialog extends StatelessWidget {
             runSpacing: 8,
             children: [
               _SettingsOutlineButton(
-                label: 'Forget Master Key',
+                label: tr(
+                  'settings.label.forgetMasterKey',
+                  fallback: 'Forget Master Key',
+                ),
                 onTap: hasLocalSyncKey ? onForgetMasterKey : null,
               ),
               _SettingsOutlineButton(
-                label: 'Change Master Key',
+                label: tr(
+                  'settings.label.changeMasterKey',
+                  fallback: 'Change Master Key',
+                ),
                 onTap: canChangeMasterKey ? onChangeMasterKey : null,
               ),
             ],

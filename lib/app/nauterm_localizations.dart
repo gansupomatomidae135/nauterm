@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -175,7 +174,8 @@ String tr(
   String? fallback,
   Map<String, Object?> args = const {},
 }) {
-  if (appLanguage == AppLanguage.english) {
+  if (appLanguage == AppLanguage.english &&
+      NautermLocalizations.current.locale.languageCode != 'en') {
     return _interpolateLocalizationArgs(fallback ?? key, args);
   }
   return NautermLocalizations.current.tr(key, fallback: fallback, args: args);
@@ -200,23 +200,11 @@ class _NautermLocalizationsDelegate
       locale.languageCode == 'en' || locale.languageCode == 'zh';
 
   @override
-  Future<NautermLocalizations> load(Locale locale) {
-    if (locale.languageCode == 'en') {
-      const localizations = NautermLocalizations(
-        Locale('en'),
-        messages: {
-          'language.english.autonym': 'English',
-          'language.simplifiedChinese.autonym': '简体中文',
-        },
-      );
-      NautermLocalizations.current = localizations;
-      return SynchronousFuture(localizations);
-    }
-    return NautermLocalizations.load(locale).then((localizations) {
-      NautermLocalizations.current = localizations;
-      return localizations;
-    });
-  }
+  Future<NautermLocalizations> load(Locale locale) =>
+      NautermLocalizations.load(locale).then((localizations) {
+        NautermLocalizations.current = localizations;
+        return localizations;
+      });
 
   @override
   bool shouldReload(_NautermLocalizationsDelegate old) => false;
