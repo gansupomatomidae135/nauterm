@@ -232,7 +232,10 @@ class _PendingHostConnectionPageState
                         ),
                         const Spacer(),
                         _ConnectionButton(
-                          label: tr('common.action.connect', fallback: 'Connect'),
+                          label: tr(
+                            'common.action.connect',
+                            fallback: 'Connect',
+                          ),
                           primary: true,
                           onPressed: _starting
                               ? null
@@ -685,7 +688,10 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
 
     return Row(
       children: [
-        _ConnectionButton(label: tr('common.action.close', fallback: 'Close'), onPressed: _closePage),
+        _ConnectionButton(
+          label: tr('common.action.close', fallback: 'Close'),
+          onPressed: _closePage,
+        ),
         if (mode == _ConnectionPageMode.authentication &&
             _authTab == _ConnectionAuthTab.publicKey) ...[
           SizedBox(width: 10),
@@ -710,7 +716,10 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
           ),
           SizedBox(width: 10),
           _ConnectionButton(
-            label: tr('common.label.addAndContinue', fallback: 'Add and continue'),
+            label: tr(
+              'common.label.addAndContinue',
+              fallback: 'Add and continue',
+            ),
             primary: true,
             onPressed: _trustHostKey,
           ),
@@ -722,7 +731,10 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
           ),
         ] else if (mode == _ConnectionPageMode.authentication) ...[
           _ConnectionButton(
-            label: tr('workspace.label.continueSave', fallback: 'Continue & Save'),
+            label: tr(
+              'workspace.label.continueSave',
+              fallback: 'Continue & Save',
+            ),
             primary: true,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.horizontal(left: Radius.circular(8)),
