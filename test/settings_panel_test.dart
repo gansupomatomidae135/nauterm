@@ -280,6 +280,26 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('terminal request opens the terminal settings page', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: SettingsPanel(detectExternalEditors: false)),
+    );
+    await tester.pumpAndSettle();
+
+    showSettingsWindow(page: NautermSettingsPage.terminal);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      find.byKey(const ValueKey('settings-terminal-scroll-view')),
+      findsOneWidget,
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('settings input supports mouse drag selection', (
     WidgetTester tester,
   ) async {

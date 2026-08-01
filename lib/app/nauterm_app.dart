@@ -12,12 +12,14 @@ class NautermApp extends StatelessWidget {
   const NautermApp({
     super.key,
     required this.onOpenSettings,
+    this.onOpenTerminalSettings,
     this.workspaceController,
     this.onStartWindowDrag,
     this.onToggleWindowMaximized,
   });
 
   final VoidCallback onOpenSettings;
+  final VoidCallback? onOpenTerminalSettings;
   final NautermWorkspaceController? workspaceController;
   final VoidCallback? onStartWindowDrag;
   final VoidCallback? onToggleWindowMaximized;
@@ -45,6 +47,7 @@ class NautermApp extends StatelessWidget {
             themeMode: mode.toFlutterThemeMode(),
             home: NautermWorkspace(
               onOpenSettings: onOpenSettings,
+              onOpenTerminalSettings: onOpenTerminalSettings ?? onOpenSettings,
               controller: workspaceController,
               onStartWindowDrag: onStartWindowDrag,
               onToggleWindowMaximized: onToggleWindowMaximized,

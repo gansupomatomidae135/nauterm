@@ -130,6 +130,13 @@ BoxDecoration _settingsFieldDecoration({
 
 enum _SettingsPage { general, terminal, sftp, ai, sync, shortcuts, about }
 
+_SettingsPage? _takeRequestedSettingsPage() =>
+    switch (takeRequestedSettingsPage()) {
+      NautermSettingsPage.terminal => _SettingsPage.terminal,
+      NautermSettingsPage.about => _SettingsPage.about,
+      null => null,
+    };
+
 class _SettingsSearchEntry {
   const _SettingsSearchEntry({
     required this.page,
@@ -494,8 +501,9 @@ class _SettingsPanelState extends State<SettingsPanel> {
   void initState() {
     super.initState();
     nautermSyncStatusRevision.addListener(_reloadSyncStatus);
-    if (takeRequestedSettingsPage() == NautermSettingsPage.about) {
-      _selectedPage = _SettingsPage.about;
+    final requestedPage = _takeRequestedSettingsPage();
+    if (requestedPage != null) {
+      _selectedPage = requestedPage;
     }
     _settingsSearchController = TextEditingController();
     settingsPageRequestRevision.addListener(_handleSettingsPageRequest);
@@ -590,8 +598,9 @@ class _SettingsPanelState extends State<SettingsPanel> {
   }
 
   void _handleSettingsPageRequest() {
-    if (takeRequestedSettingsPage() == NautermSettingsPage.about) {
-      _selectPage(_SettingsPage.about);
+    final requestedPage = _takeRequestedSettingsPage();
+    if (requestedPage != null) {
+      _selectPage(requestedPage);
     }
   }
 

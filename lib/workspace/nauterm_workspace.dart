@@ -252,12 +252,14 @@ class NautermWorkspace extends ConsumerStatefulWidget {
   const NautermWorkspace({
     super.key,
     required this.onOpenSettings,
+    required this.onOpenTerminalSettings,
     this.controller,
     this.onStartWindowDrag,
     this.onToggleWindowMaximized,
   });
 
   final VoidCallback onOpenSettings;
+  final VoidCallback onOpenTerminalSettings;
   final NautermWorkspaceController? controller;
   final VoidCallback? onStartWindowDrag;
   final VoidCallback? onToggleWindowMaximized;
@@ -1084,7 +1086,11 @@ class _NautermWorkspaceState extends ConsumerState<NautermWorkspace> {
               ),
               _OpenSettingsIntent: CallbackAction<_OpenSettingsIntent>(
                 onInvoke: (_) {
-                  widget.onOpenSettings();
+                  if (selectedTerminalPageActive) {
+                    widget.onOpenTerminalSettings();
+                  } else {
+                    widget.onOpenSettings();
+                  }
                   return null;
                 },
               ),

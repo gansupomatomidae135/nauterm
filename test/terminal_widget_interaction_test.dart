@@ -169,6 +169,31 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
+  testWidgets('terminal context menu invokes its settings callback', (
+    tester,
+  ) async {
+    final controller = TerminalController(
+      driver: MemoryTerminalDriver(columns: 80, rows: 8),
+    );
+    addTearDown(controller.dispose);
+    var settingsRequests = 0;
+    await _pumpTerminal(
+      tester,
+      controller,
+      onSettingsRequested: () => settingsRequests++,
+    );
+
+    await tester.tap(
+      find.byKey(const ValueKey('terminal-renderer-region')),
+      buttons: kSecondaryMouseButton,
+    );
+    await tester.pump();
+    await tester.tap(find.text('Settings'));
+    await tester.pump();
+
+    expect(settingsRequests, 1);
+  });
+
   testWidgets('terminal context menu does not capture adjacent panels', (
     tester,
   ) async {
@@ -1968,6 +1993,7 @@ Future<void> _pumpTerminal(
   bool autocompleteEnabled = true,
   bool autofocusTerminal = false,
   TerminalOpenTargetCallback? onOpenTarget,
+  VoidCallback? onSettingsRequested,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -1988,6 +2014,7 @@ Future<void> _pumpTerminal(
           composerSuggestionResolver: composerSuggestionResolver,
           padding: EdgeInsets.zero,
           onOpenTarget: onOpenTarget,
+          onSettingsRequested: onSettingsRequested,
         ),
       ),
     ),

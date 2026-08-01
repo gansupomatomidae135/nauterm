@@ -786,7 +786,9 @@ extension _NautermWorkspaceRendering on _NautermWorkspaceState {
           onNewTabRequested: tab.replay
               ? null
               : () => _openLocalTerminalViewTab(tab.id, view.id),
-          onSettingsRequested: tab.replay ? null : widget.onOpenSettings,
+          onSettingsRequested: tab.replay
+              ? null
+              : widget.onOpenTerminalSettings,
           onCloseRequested: tab.replay
               ? null
               : () => _confirmAndClose(

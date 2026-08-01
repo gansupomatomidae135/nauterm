@@ -108,6 +108,8 @@ class _MainWindowState extends State<MainWindow> with WidgetsBindingObserver {
       child: widget.isContentMounted
           ? NautermApp(
               onOpenSettings: showSettingsWindow,
+              onOpenTerminalSettings: () =>
+                  showSettingsWindow(page: NautermSettingsPage.terminal),
               workspaceController: widget.workspaceController,
               onStartWindowDrag: _startWindowDrag,
               onToggleWindowMaximized: _toggleWindowMaximized,
