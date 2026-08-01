@@ -144,6 +144,90 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('sidebar and content keep independent tab traversal loops', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: SettingsPanel(detectExternalEditors: false)),
+    );
+    await tester.pumpAndSettle();
+
+    final sidebarScope = find.byKey(
+      const ValueKey('settings-sidebar-focus-scope'),
+    );
+    final contentScope = find.byKey(
+      const ValueKey('settings-content-focus-scope'),
+    );
+    expect(sidebarScope, findsOneWidget);
+    expect(contentScope, findsOneWidget);
+
+    bool primaryFocusIsInside(Finder scope) {
+      final focusContext = FocusManager.instance.primaryFocus?.context;
+      if (focusContext == null) return false;
+      return find
+          .descendant(
+            of: scope,
+            matching: find.byElementPredicate(
+              (element) => identical(element, focusContext),
+            ),
+          )
+          .evaluate()
+          .isNotEmpty;
+    }
+
+    await tester.tap(find.byKey(const ValueKey('settings-search-field')));
+    await tester.pump();
+    expect(primaryFocusIsInside(contentScope), isTrue);
+    for (var index = 0; index < 12; index++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(primaryFocusIsInside(contentScope), isTrue);
+    }
+
+    final generalNav = find.byKey(const ValueKey('settings-nav-general'));
+    await tester.tap(generalNav);
+    await tester.pump();
+    final sidebarFocusScope = FocusScope.of(tester.element(generalNav));
+    sidebarFocusScope.traversalDescendants.first.requestFocus();
+    await tester.pump();
+    expect(primaryFocusIsInside(sidebarScope), isTrue);
+    for (var index = 0; index < 12; index++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(primaryFocusIsInside(sidebarScope), isTrue);
+    }
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('credential reveal buttons are skipped by tab traversal', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: SettingsPanel(detectExternalEditors: false)),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-nav-sync')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final revealButtons = find.byKey(
+      const ValueKey('settings-credential-reveal'),
+    );
+    expect(revealButtons, findsWidgets);
+    for (final reveal in tester.widgetList<ExcludeFocusTraversal>(
+      revealButtons,
+    )) {
+      expect(reveal.excluding, isTrue);
+    }
+    expect(
+      find.descendant(of: revealButtons, matching: find.byType(IconButton)),
+      findsWidgets,
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('about page shows application information and updates', (
     WidgetTester tester,
   ) async {

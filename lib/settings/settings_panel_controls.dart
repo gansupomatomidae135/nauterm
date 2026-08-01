@@ -1687,22 +1687,26 @@ class _SettingsTextFieldState extends State<_SettingsTextField> {
                     ),
                   ],
                   if (widget.obscureText && widget.revealable)
-                    Tooltip(
-                      message: _obscured
-                          ? 'Show credential'
-                          : 'Hide credential',
-                      child: IconButton(
-                        onPressed: () => setState(() => _obscured = !_obscured),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 28,
-                          height: 28,
-                        ),
-                        splashRadius: 14,
-                        icon: Icon(
-                          _obscured ? LucideIcons.eyeOff : LucideIcons.eye,
-                          size: 14,
-                          color: _mutedText,
+                    ExcludeFocusTraversal(
+                      key: const ValueKey('settings-credential-reveal'),
+                      child: Tooltip(
+                        message: _obscured
+                            ? 'Show credential'
+                            : 'Hide credential',
+                        child: IconButton(
+                          onPressed: () =>
+                              setState(() => _obscured = !_obscured),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints.tightFor(
+                            width: 28,
+                            height: 28,
+                          ),
+                          splashRadius: 14,
+                          icon: Icon(
+                            _obscured ? LucideIcons.eyeOff : LucideIcons.eye,
+                            size: 14,
+                            color: _mutedText,
+                          ),
                         ),
                       ),
                     ),

@@ -1210,35 +1210,42 @@ class _SettingsPanelState extends State<SettingsPanel> {
                 ),
                 child: Row(
                   children: [
-                    FocusTraversalGroup(
-                      key: const ValueKey('settings-sidebar-focus-group'),
-                      policy: OrderedTraversalPolicy(),
-                      child: _SettingsSidebar(
-                        selectedPage: _selectedPage,
-                        compact: compactSidebar,
-                        onPageSelected: _selectPage,
+                    FocusScope(
+                      key: const ValueKey('settings-sidebar-focus-scope'),
+                      child: FocusTraversalGroup(
+                        key: const ValueKey('settings-sidebar-focus-group'),
+                        policy: OrderedTraversalPolicy(),
+                        child: _SettingsSidebar(
+                          selectedPage: _selectedPage,
+                          compact: compactSidebar,
+                          onPageSelected: _selectPage,
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: FocusTraversalGroup(
-                        key: const ValueKey('settings-content-focus-group'),
-                        policy: OrderedTraversalPolicy(),
-                        child: Column(
-                          children: [
-                            _SettingsHeader(
-                              searchController: _settingsSearchController,
-                              onSearchChanged: (value) => setState(
-                                () => _settingsSearchQuery = value.trim(),
+                      child: FocusScope(
+                        key: const ValueKey('settings-content-focus-scope'),
+                        child: FocusTraversalGroup(
+                          key: const ValueKey('settings-content-focus-group'),
+                          policy: OrderedTraversalPolicy(),
+                          child: Column(
+                            children: [
+                              _SettingsHeader(
+                                searchController: _settingsSearchController,
+                                onSearchChanged: (value) => setState(
+                                  () => _settingsSearchQuery = value.trim(),
+                                ),
+                                onResetPage: _canResetPage
+                                    ? () =>
+                                          unawaited(_resetSettings(all: false))
+                                    : null,
+                                onResetAll: () =>
+                                    unawaited(_resetSettings(all: true)),
+                                onDone: () => _closeSettingsWindow(context),
                               ),
-                              onResetPage: _canResetPage
-                                  ? () => unawaited(_resetSettings(all: false))
-                                  : null,
-                              onResetAll: () =>
-                                  unawaited(_resetSettings(all: true)),
-                              onDone: () => _closeSettingsWindow(context),
-                            ),
-                            Expanded(child: _buildContent()),
-                          ],
+                              Expanded(child: _buildContent()),
+                            ],
+                          ),
                         ),
                       ),
                     ),
