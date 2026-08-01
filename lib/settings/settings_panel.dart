@@ -1136,11 +1136,13 @@ class _SettingsPanelState extends State<SettingsPanel> {
   }
 
   void _closeSettingsWindow(BuildContext context) {
-    final windowController = WindowScope.maybeOf(context);
-    if (windowController is RegularWindowController) {
-      hideSettingsNativeWindow();
-      windowController.destroy();
-      return;
+    if (defaultTargetPlatform != TargetPlatform.linux) {
+      final windowController = WindowScope.maybeOf(context);
+      if (windowController is RegularWindowController) {
+        hideSettingsNativeWindow();
+        windowController.destroy();
+        return;
+      }
     }
 
     hideSettingsWindow();
