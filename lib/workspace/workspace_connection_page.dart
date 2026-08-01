@@ -227,12 +227,12 @@ class _PendingHostConnectionPageState
                     Row(
                       children: [
                         _ConnectionButton(
-                          label: 'Close',
+                          label: tr('common.action.close', fallback: 'Close'),
                           onPressed: _starting ? null : widget.onCloseRequested,
                         ),
                         const Spacer(),
                         _ConnectionButton(
-                          label: 'Connect',
+                          label: tr('common.action.connect', fallback: 'Connect'),
                           primary: true,
                           onPressed: _starting
                               ? null
@@ -685,12 +685,12 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
 
     return Row(
       children: [
-        _ConnectionButton(label: 'Close', onPressed: _closePage),
+        _ConnectionButton(label: tr('common.action.close', fallback: 'Close'), onPressed: _closePage),
         if (mode == _ConnectionPageMode.authentication &&
             _authTab == _ConnectionAuthTab.publicKey) ...[
           SizedBox(width: 10),
           _ConnectionButton(
-            label: 'Add key',
+            label: tr('workspace.label.addKey', fallback: 'Add key'),
             onPressed: widget.onAddKeyRequested,
           ),
         ],
@@ -705,24 +705,24 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
         const Spacer(),
         if (mode == _ConnectionPageMode.hostKey) ...[
           _ConnectionButton(
-            label: 'Continue',
+            label: tr('common.action.continue', fallback: 'Continue'),
             onPressed: _trustHostKeyForSession,
           ),
           SizedBox(width: 10),
           _ConnectionButton(
-            label: 'Add and continue',
+            label: tr('common.label.addAndContinue', fallback: 'Add and continue'),
             primary: true,
             onPressed: _trustHostKey,
           ),
         ] else if (mode == _ConnectionPageMode.failed && hasSshProfile) ...[
           _ConnectionButton(
-            label: 'Start over',
+            label: tr('workspace.label.startOver', fallback: 'Start over'),
             primary: true,
             onPressed: _reconnect,
           ),
         ] else if (mode == _ConnectionPageMode.authentication) ...[
           _ConnectionButton(
-            label: 'Continue & Save',
+            label: tr('workspace.label.continueSave', fallback: 'Continue & Save'),
             primary: true,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.horizontal(left: Radius.circular(8)),
@@ -740,7 +740,7 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
             status.phase == TerminalConnectionPhase.connecting &&
             hasSshProfile) ...[
           _ConnectionButton(
-            label: 'Start over',
+            label: tr('workspace.label.startOver', fallback: 'Start over'),
             primary: true,
             onPressed: _reconnect,
           ),
