@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "updated_at": "2026-08-01T00:00:00Z",
+  "presets": {
+    "openai": {
+      "name": "OpenAI",
+      "protocol": "openai",
+      "base_url": "https://api.openai.com/v1",
+      "default_models": ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"],
+      "website_url": "https://platform.openai.com",
+      "api_key_url": "https://platform.openai.com/api-keys"
+    },
+    "anthropic": {
+      "name": "Anthropic",
+      "protocol": "anthropic",
+      "base_url": "https://api.anthropic.com",
+      "default_models": ["claude-fable-5", "claude-opus-5", "claude-sonnet-5", "claude-haiku-4-5-20251001"],
+      "website_url": "https://console.anthropic.com",
+      "api_key_url": "https://console.anthropic.com/settings/keys"
+    },
+    "google": {
+      "name": "Google Gemini",
+      "protocol": "openai",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "default_models": ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-pro-preview"],
+      "website_url": "https://ai.google.dev/gemini-api",
+      "api_key_url": "https://aistudio.google.com/app/apikey"
+    },
+    "xai": {
+      "name": "xAI",
+      "protocol": "openai",
+      "base_url": "https://api.x.ai/v1",
+      "default_models": ["grok-4.5", "grok-4.5-latest"],
+      "website_url": "https://x.ai/api",
+      "api_key_url": "https://console.x.ai"
+    },
+    "mistral": {
+      "name": "Mistral AI",
+      "protocol": "openai",
+      "base_url": "https://api.mistral.ai/v1",
+      "default_models": ["mistral-medium-3-5", "mistral-small-2603"],
+      "website_url": "https://mistral.ai",
+      "api_key_url": "https://console.mistral.ai/api-keys"
+    },
+    "deepseek": {
+      "name": "DeepSeek",
+      "protocol": "openai",
+      "base_url": "https://api.deepseek.com/v1",
+      "default_models": ["deepseek-v4-pro", "deepseek-v4-flash"],
+      "website_url": "https://platform.deepseek.com",
+      "api_key_url": "https://platform.deepseek.com/api_keys"
+    },
+    "qwen": {
+      "name": "Alibaba Cloud Model Studio",
+      "protocol": "openai",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "default_models": ["qwen3.7-max", "qwen3.7-plus", "qwen3.6-flash"],
+      "website_url": "https://bailian.console.aliyun.com",
+      "api_key_url": "https://bailian.console.aliyun.com/#/api-key"
+    },
+    "kimi": {
+      "name": "Kimi",
+      "protocol": "openai",
+      "base_url": "https://api.moonshot.ai/v1",
+      "default_models": ["kimi-k3", "kimi-k2.6"],
+      "website_url": "https://platform.kimi.ai",
+      "api_key_url": "https://platform.kimi.ai/console/api-keys"
+    },
+    "zhipu": {
+      "name": "Zhipu GLM",
+      "protocol": "openai",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4",
+      "default_models": ["glm-5.2", "glm-5.1"],
+      "website_url": "https://open.bigmodel.cn",
+      "api_key_url": "https://open.bigmodel.cn/usercenter/apikeys"
+    },
+    "doubao": {
+      "name": "Volcengine Ark",
+      "protocol": "openai",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+      "default_models": ["doubao-seed-2-1-pro-260628", "doubao-seed-2-0-lite-260428"],
+      "website_url": "https://console.volcengine.com/ark",
+      "api_key_url": "https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey"
+    },
+    "mimo": {
+      "name": "Xiaomi MiMo",
+      "protocol": "openai",
+      "base_url": "https://api.xiaomimimo.com/v1",
+      "default_models": ["mimo-v2.5-pro", "mimo-v2.5"],
+      "website_url": "https://mimo.mi.com",
+      "api_key_url": "https://platform.xiaomimimo.com/#/console/api-keys"
+    },
+    "stepfun": {
+      "name": "StepFun",
+      "protocol": "openai",
+      "base_url": "https://api.stepfun.com/step_plan/v1",
+      "default_models": ["step-3.7-flash", "step-3.5-flash"],
+      "website_url": "https://platform.stepfun.com/step-plan",
+      "api_key_url": "https://platform.stepfun.com/interface-key"
+    },
+    "minimax": {
+      "name": "MiniMax",
+      "protocol": "openai",
+      "base_url": "https://api.minimax.io/v1",
+      "default_models": ["MiniMax-M3", "MiniMax-M2.7"],
+      "website_url": "https://platform.minimax.io",
+      "api_key_url": "https://platform.minimax.io/user-center/basic-information/interface-key"
+    },
+    "baidu": {
+      "name": "Baidu Qianfan",
+      "protocol": "openai",
+      "base_url": "https://qianfan.baidubce.com/v2",
+      "default_models": ["ernie-5.1", "ernie-5.0"],
+      "website_url": "https://cloud.baidu.com/product/wenxinworkshop",
+      "api_key_url": "https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application"
+    },
+    "ollama": {
+      "name": "Ollama",
+      "protocol": "openai",
+      "base_url": "http://localhost:11434/v1",
+      "default_models": ["qwen3.5", "deepseek-r1", "gpt-oss:20b"],
+      "website_url": "https://ollama.com"
+    },
+    "openrouter": {
+      "name": "OpenRouter",
+      "protocol": "openai",
+      "base_url": "https://openrouter.ai/api/v1",
+      "default_models": ["openai/gpt-5.6-sol", "anthropic/claude-sonnet-5", "google/gemini-3.6-flash", "x-ai/grok-4.5"],
+      "website_url": "https://openrouter.ai",
+      "api_key_url": "https://openrouter.ai/keys"
+    },
+    "therouter": {
+      "name": "TheRouter",
+      "protocol": "openai",
+      "base_url": "https://api.therouter.ai/v1",
+      "default_models": ["openai/gpt-5.6-sol", "anthropic/claude-sonnet-5", "google/gemini-3.6-flash", "qwen/qwen3.7-max"],
+      "website_url": "https://therouter.ai",
+      "api_key_url": "https://dashboard.therouter.ai"
+    },
+    "modelscope": {
+      "name": "ModelScope",
+      "protocol": "openai",
+      "base_url": "https://api-inference.modelscope.cn/v1",
+      "default_models": ["ZhipuAI/GLM-5.2"],
+      "website_url": "https://modelscope.cn",
+      "api_key_url": "https://modelscope.cn/my/myaccesstoken"
+    },
+    "nvidia": {
+      "name": "NVIDIA NIM",
+      "protocol": "openai",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "default_models": ["moonshotai/kimi-k2.5"],
+      "website_url": "https://build.nvidia.com",
+      "api_key_url": "https://build.nvidia.com/settings/api-keys"
+    },
+    "longcat": {
+      "name": "LongCat",
+      "protocol": "openai",
+      "base_url": "https://api.longcat.chat/openai/v1",
+      "default_models": ["LongCat-2.0"],
+      "website_url": "https://longcat.chat/platform",
+      "api_key_url": "https://longcat.chat/platform/api_keys"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+name = "Atom One Light"
+type = "light"
+
+[colors.primary]
+accent = "#4078f2"
+foreground = "#383a42"
+background = "#fafafa"
+
+[colors.cursor]
+text = "#fafafa"
+cursor = "#528bff"
+
+[colors.selection]
+text = "#383a42"
+background = "#bfceff"
+
+[colors.normal]
+black = "#383a42"
+red = "#e45649"
+green = "#50a14f"
+yellow = "#c18401"
+blue = "#4078f2"
+magenta = "#a626a4"
+cyan = "#0184bc"
+white = "#a0a1a7"
+
+[colors.bright]
+black = "#696c77"
+red = "#e45649"
+green = "#50a14f"
+yellow = "#c18401"
+blue = "#4078f2"
+magenta = "#a626a4"
+cyan = "#0184bc"
+white = "#ffffff"

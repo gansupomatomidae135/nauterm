@@ -1,0 +1,8 @@
+{
+  "entries": [
+    {
+      "packages": ["Sparkle 2.9.4"],
+      "license": "assets/licenses/manual/sparkle-LICENSE"
+    }
+  ]
+}

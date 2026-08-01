@@ -1,0 +1,4 @@
+#include "../../Flutter/Flutter-Debug.xcconfig"
+#include "Warnings.xcconfig"
+SPARKLE_FEED_URL =
+SPARKLE_PUBLIC_ED_KEY =

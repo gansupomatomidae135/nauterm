@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "appearance": {
+    "theme": "light",
+    "hostIcon": "osBadge",
+    "language": "system"
+  },
+  "window": {
+    "width": 920,
+    "height": 620
+  },
+  "tabs": {
+    "confirmOnClose": true
+  },
+  "terminal": {
+    "shellPath": null,
+    "emulation": "xterm-256color",
+    "appearance": {
+      "theme": {
+        "id": "default"
+      },
+      "font": {
+        "family": "monospace",
+        "cjkFamily": null,
+        "size": 12,
+        "lineHeight": 1.18,
+        "letterSpacing": 0,
+        "enableLigatures": false,
+        "weight": 400,
+        "boldWeight": 700
+      },
+      "cursor": {
+        "shape": "block",
+        "blink": true
+      },
+      "scrollbar": true,
+      "padding": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0
+      }
+    },
+    "behavior": {
+      "copyOnSelect": false,
+      "scrollbackLines": 10000
+    },
+    "features": {
+      "composer": true,
+      "autocomplete": false,
+      "multiTab": false
+    },
+    "input": {
+      "useOptionAsMetaKey": true
+    }
+  },
+  "ssh": {
+    "keepaliveInterval": 20000
+  },
+  "sftp": {
+    "showTab": true,
+    "sshEditor": "vim",
+    "showHiddenFiles": false
+  },
+  "workspace": {
+    "enabled": true
+  },
+  "shortcuts": {
+    "quickConnect": "ctrl+t",
+    "commandPalette": "ctrl+shift+p",
+    "switchToSsh": "ctrl+shift+t",
+    "switchToSftp": "ctrl+shift+s",
+    "previousTab": "ctrl+shift+[",
+    "nextTab": "ctrl+shift+]",
+    "closeTab": "ctrl+shift+w",
+    "copy": "ctrl+shift+c",
+    "paste": "ctrl+shift+v",
+    "selectAll": "ctrl+shift+a",
+    "search": "ctrl+shift+f",
+    "splitRight": "ctrl+shift+e",
+    "splitDown": "ctrl+shift+o",
+    "newLocalTerminal": "ctrl+l",
+    "tabSwitches": [
+      "ctrl+1",
+      "ctrl+2",
+      "ctrl+3",
+      "ctrl+4",
+      "ctrl+5",
+      "ctrl+6",
+      "ctrl+7",
+      "ctrl+8",
+      "ctrl+9"
+    ]
+  },
+  "ai": {
+    "presetsUrl": "https://raw.githubusercontent.com/korvect/nauterm-ai-presets/main/presets.json",
+    "includeTerminalSelection": true,
+    "includeRecentTerminalOutput": true
+  },
+  "recording": {
+    "enabled": true,
+    "captureEnabled": false,
+    "retentionDays": 30,
+    "maxSessionBytes": 104857600,
+    "maxTotalBytes": 2147483648
+  },
+  "sync": {
+    "mergeStrategy": "smart_merge",
+    "automatic": false,
+    "interval": 86400000,
+    "backupCount": 10
+  }
+}

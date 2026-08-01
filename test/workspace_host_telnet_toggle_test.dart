@@ -1,0 +1,193 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:nauterm/app/nauterm_app.dart';
+import 'package:nauterm/data/nauterm_data_store.dart';
+import 'package:nauterm/ui/terminal_theme_preview.dart';
+
+void main() {
+  testWidgets('protocol header uses a wrapping layout', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(NautermApp(onOpenSettings: () {}));
+    await tester.tap(find.text('New host'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    final port = find.byKey(const ValueKey('protocol-port:SSH'));
+    expect(port, findsOneWidget);
+    expect(
+      find.ancestor(of: port, matching: find.byType(Wrap)),
+      findsOneWidget,
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('mosh uses a select and reveals its command when enabled', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(NautermApp(onOpenSettings: () {}));
+    await tester.tap(find.text('New host'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    final showMoreButton = find.byKey(const ValueKey('protocol-show-more'));
+    tester.widget<InkWell>(showMoreButton).onTap!();
+    await tester.pump();
+
+    final mosh = find.byKey(const ValueKey('workspace-select-focus:Mosh'));
+    final editorScrollable = find
+        .descendant(
+          of: find.byKey(const ValueKey('workspace-editor-scroll-view')),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    final position = tester.state<ScrollableState>(editorScrollable).position;
+    for (var index = 0; mosh.evaluate().isEmpty && index < 12; index++) {
+      position.jumpTo(
+        (position.pixels + 250).clamp(0.0, position.maxScrollExtent).toDouble(),
+      );
+      await tester.pump();
+    }
+
+    expect(mosh, findsOneWidget);
+    position.jumpTo(position.maxScrollExtent);
+    await tester.pump();
+    await tester.tap(mosh);
+    await tester.pump();
+    await tester.tap(find.text('Enabled').last);
+    await tester.pump();
+    expect(find.text('Mosh server command'), findsOneWidget);
+    expect(
+      tester
+          .widgetList<TextField>(find.byType(TextField))
+          .any((field) => field.controller?.text == defaultMoshServerCommand),
+      isTrue,
+    );
+    expect(
+      tester.getTopLeft(find.byType(TerminalThemePreviewCard)).dy,
+      greaterThan(tester.getTopLeft(mosh).dy),
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('telnet can be added and removed as a host protocol', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(NautermApp(onOpenSettings: () {}));
+    await tester.tap(find.text('New host'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    final addProtocol = find.byKey(const ValueKey('add-protocol'));
+    final editorScrollable = find
+        .descendant(
+          of: find.byKey(const ValueKey('workspace-editor-scroll-view')),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    final position = tester.state<ScrollableState>(editorScrollable).position;
+    for (var index = 0; addProtocol.evaluate().isEmpty && index < 12; index++) {
+      position.jumpTo(
+        (position.pixels + 250).clamp(0.0, position.maxScrollExtent).toDouble(),
+      );
+      await tester.pump();
+    }
+    expect(addProtocol, findsOneWidget);
+    tester.widget<InkWell>(addProtocol).onTap!();
+    await tester.pump();
+    await tester.tap(find.text('Telnet').last);
+    await tester.pump();
+
+    final telnetActions = find.byKey(
+      const ValueKey('protocol-actions:Telnet'),
+      skipOffstage: false,
+    );
+    expect(telnetActions, findsOneWidget);
+    expect(
+      find.text('Telnet on', findRichText: true, skipOffstage: false),
+      findsOneWidget,
+    );
+
+    await tester.ensureVisible(telnetActions);
+    await tester.pump();
+    await tester.tap(telnetActions);
+    await tester.pump();
+    expect(find.text('Create group'), findsOneWidget);
+    await tester.tap(find.text('Remove protocol'));
+    await tester.pump();
+    expect(telnetActions, findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('protocol actions create a group from the current protocol', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(NautermApp(onOpenSettings: () {}));
+    await tester.tap(find.text('New host'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    final hostPort = find.descendant(
+      of: find.byKey(const ValueKey('protocol-port:SSH')),
+      matching: find.byType(TextField),
+    );
+    await tester.enterText(hostPort, '2202');
+    await tester.pump();
+
+    await tester.tap(find.byKey(const ValueKey('protocol-actions:SSH')));
+    await tester.pump();
+    await tester.tap(find.text('Create group'));
+    await tester.pump();
+
+    final groupDrawer = find.byKey(const ValueKey<Object>('group:new:root'));
+    expect(groupDrawer, findsOneWidget);
+    final groupPort = find.descendant(
+      of: find.descendant(
+        of: groupDrawer,
+        matching: find.byKey(const ValueKey('protocol-port:SSH')),
+      ),
+      matching: find.byType(TextField),
+    );
+    expect(tester.widget<TextField>(groupPort).controller?.text, '2202');
+    expect(
+      find.descendant(
+        of: groupDrawer,
+        matching: find.text('Telnet on', findRichText: true),
+      ),
+      findsNothing,
+    );
+
+    await tester.tap(
+      find.descendant(
+        of: groupDrawer,
+        matching: find.byKey(const ValueKey('protocol-actions:SSH')),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Create group'), findsNothing);
+    expect(find.text('Remove protocol'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+}
