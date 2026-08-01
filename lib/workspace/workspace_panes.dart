@@ -30,6 +30,7 @@ class _TerminalSessionView extends StatefulWidget {
     this.onConnectionAuthSaved,
     this.onAddKeyRequested,
     this.onEditHostRequested,
+    this.onReloadConnection,
     this.onConnectionPageVisibilityChanged,
     this.onSplitRequested,
     this.onNewTabRequested,
@@ -55,6 +56,7 @@ class _TerminalSessionView extends StatefulWidget {
   final TerminalConnectionAuthSaver? onConnectionAuthSaved;
   final VoidCallback? onAddKeyRequested;
   final VoidCallback? onEditHostRequested;
+  final _ReloadedTerminalConnection? Function()? onReloadConnection;
   final ValueChanged<bool>? onConnectionPageVisibilityChanged;
   final ValueChanged<TerminalSplitDirection>? onSplitRequested;
   final VoidCallback? onNewTabRequested;
@@ -187,6 +189,7 @@ class _TerminalSessionViewState extends State<_TerminalSessionView> {
               onSaveAuth: widget.onConnectionAuthSaved,
               onAddKeyRequested: widget.onAddKeyRequested,
               onEditHostRequested: widget.onEditHostRequested,
+              onReloadConnection: widget.onReloadConnection,
               onCloseRequested: widget.onCloseRequested,
               dataStore: widget.dataStore,
             );

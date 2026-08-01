@@ -111,6 +111,42 @@ extension _NautermWorkspaceTerminalActions on _NautermWorkspaceState {
     }
   }
 
+  _ReloadedTerminalConnection? _reloadTerminalConnection(
+    TerminalController controller,
+    TerminalTheme theme,
+  ) {
+    final current = controller.sshProfile;
+    if (current == null) {
+      return null;
+    }
+    final hostId = current.hostId;
+    if (hostId == null) {
+      return _ReloadedTerminalConnection(profile: current);
+    }
+    final host = _dataStore?.getHost(hostId);
+    final auth = _sshAuthForHost(host, feature: 'SSH reconnect');
+    if (host == null || auth == null) {
+      return null;
+    }
+    return _ReloadedTerminalConnection(
+      profile: refreshSavedHostSshProfile(
+        current: current,
+        host: host,
+        address: auth.host,
+        port: auth.port,
+        username: auth.username,
+        password: auth.password,
+        privateKey: auth.privateKey,
+        proxy: auth.proxy,
+        environment: _terminalEnvironmentForTheme(
+          theme,
+          _hostEnvironment(host),
+        ),
+      ),
+      moshServerCommand: host.moshServerCommand,
+    );
+  }
+
   void _openLocalTerminalViewTab(int terminalSessionId, int terminalViewId) {
     _setWorkspaceState(() {
       final tab = _terminalTabs

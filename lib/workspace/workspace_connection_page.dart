@@ -51,6 +51,45 @@ typedef TerminalConnectionAuthSaver =
       TerminalConnectionKeyOption? key,
     });
 
+class _ReloadedTerminalConnection {
+  const _ReloadedTerminalConnection({
+    required this.profile,
+    this.moshServerCommand,
+  });
+
+  final SshConnectionProfile profile;
+  final String? moshServerCommand;
+}
+
+@visibleForTesting
+SshConnectionProfile refreshSavedHostSshProfile({
+  required SshConnectionProfile current,
+  required HostEntry host,
+  required String address,
+  required int port,
+  required String username,
+  required Map<String, String> environment,
+  String? password,
+  String? privateKey,
+  TerminalProxyConfig? proxy,
+}) {
+  return SshConnectionProfile(
+    host: address,
+    port: port,
+    username: username,
+    knownHostsPath: current.knownHostsPath,
+    hostId: host.id,
+    identityId: host.identityId,
+    label: host.name,
+    password: password,
+    privateKey: privateKey,
+    proxy: proxy,
+    shellPath: _emptyToNull(host.shellPath),
+    environment: environment,
+    encoding: host.encoding,
+  );
+}
+
 class _PendingHostConnectionPage extends StatefulWidget {
   const _PendingHostConnectionPage({
     super.key,
@@ -232,6 +271,7 @@ class _TerminalConnectionPage extends StatefulWidget {
     this.onSaveAuth,
     this.onAddKeyRequested,
     this.onEditHostRequested,
+    this.onReloadConnection,
     this.onCloseRequested,
     this.dataStore,
   });
@@ -242,6 +282,7 @@ class _TerminalConnectionPage extends StatefulWidget {
   final TerminalConnectionAuthSaver? onSaveAuth;
   final VoidCallback? onAddKeyRequested;
   final VoidCallback? onEditHostRequested;
+  final _ReloadedTerminalConnection? Function()? onReloadConnection;
   final VoidCallback? onCloseRequested;
   final NautermDataStore? dataStore;
 
@@ -797,6 +838,16 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
     Object? passphrase = _preserveReconnectValue,
     SshHostKeyTrustMode? hostKeyTrustMode,
   }) {
+    final reloader = widget.onReloadConnection;
+    final reloaded = reloader?.call();
+    if (reloader != null && reloaded == null) {
+      return;
+    }
+    final profile = reloaded?.profile ?? widget.controller.sshProfile;
+    if (profile == null) {
+      return;
+    }
+    _syncControllers(profile, widget.controller.connectionStatus.phase);
     final port = int.tryParse(_portController.text.trim());
     if (port == null || port < 1 || port > 65535) {
       return;
@@ -830,6 +881,7 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
     }
 
     widget.controller.reconnectSsh(
+      profile: profile,
       host: _hostController.text.trim(),
       port: port,
       username: _usernameController.text.trim(),
@@ -837,6 +889,7 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
       password: nextPassword,
       privateKey: nextPrivateKey,
       passphrase: nextPassphrase,
+      moshServerCommand: reloaded?.moshServerCommand,
       hostKeyTrustMode: hostKeyTrustMode ?? _sessionHostKeyTrustMode,
     );
   }

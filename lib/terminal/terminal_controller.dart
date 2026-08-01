@@ -586,7 +586,7 @@ class TerminalController extends ChangeNotifier {
   final String? _shellPath;
   final String? _startupSnippet;
   final TerminalTheme _theme;
-  final String _moshServerCommand;
+  String _moshServerCommand;
   SshConnectionProfile? _sshProfile;
   SerialConnectionProfile? _serialProfile;
   TelnetConnectionProfile? _telnetProfile;
@@ -900,6 +900,7 @@ class TerminalController extends ChangeNotifier {
   }
 
   bool reconnectSsh({
+    SshConnectionProfile? profile,
     String? host,
     int? port,
     String? username,
@@ -907,14 +908,15 @@ class TerminalController extends ChangeNotifier {
     Object? password = _preserveSshProfileValue,
     Object? privateKey = _preserveSshProfileValue,
     Object? passphrase = _preserveSshProfileValue,
+    String? moshServerCommand,
     SshHostKeyTrustMode hostKeyTrustMode = SshHostKeyTrustMode.strict,
   }) {
     if (_disposed) {
       return false;
     }
 
-    final profile = _sshProfile;
-    if (profile == null) {
+    final currentProfile = _sshProfile;
+    if (currentProfile == null) {
       return false;
     }
     if (_remoteTransport == _RemoteTerminalTransport.mosh) {
@@ -926,7 +928,7 @@ class TerminalController extends ChangeNotifier {
       _clearMoshPrediction();
     }
 
-    final nextProfile = profile.copyWith(
+    final nextProfile = (profile ?? currentProfile).copyWith(
       host: host,
       port: port,
       username: username,
@@ -935,6 +937,9 @@ class TerminalController extends ChangeNotifier {
       privateKey: privateKey,
       passphrase: passphrase,
     );
+    if (moshServerCommand != null) {
+      _moshServerCommand = moshServerCommand;
+    }
     if (_hasConnectedOnce && !_reconnectBoundaryWritten) {
       _reconnectBoundaryWritten = true;
       final driver = _driver;

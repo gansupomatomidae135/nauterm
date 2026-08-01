@@ -776,6 +776,9 @@ extension _NautermWorkspaceRendering on _NautermWorkspaceState {
                       : _hosts.where((entry) => entry.id == hostId).firstOrNull;
                   if (host != null) _editHost(host);
                 },
+          onReloadConnection: tab.replay
+              ? null
+              : () => _reloadTerminalConnection(view.controller, view.theme),
           onSplitRequested: tab.replay
               ? null
               : (direction) {
