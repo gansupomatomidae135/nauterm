@@ -698,7 +698,7 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
             widget.onEditHostRequested != null) ...[
           SizedBox(width: 10),
           _ConnectionButton(
-            label: 'Edit host',
+            label: tr('workspace.label.editHost', fallback: 'Edit Host'),
             onPressed: widget.onEditHostRequested,
           ),
         ],
