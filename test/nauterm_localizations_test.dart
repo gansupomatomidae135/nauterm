@@ -26,6 +26,10 @@ void main() {
 
     expect(english.tr('settings.label.syncKey'), 'Sync Key');
     expect(
+      english.tr('workspace.label.newHost', fallback: 'New Host'),
+      'New Host',
+    );
+    expect(
       english.tr('settings.sync.key.localAvailable.label'),
       'Sync DEK available locally',
     );

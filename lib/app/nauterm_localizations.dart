@@ -110,6 +110,9 @@ class NautermLocalizations {
     String? fallback,
     Map<String, Object?> args = const {},
   }) {
+    if (locale.languageCode == 'en' && fallback != null) {
+      return _interpolateLocalizationArgs(fallback, args);
+    }
     final resolvedKey = messages.containsKey(key)
         ? key
         : keysByEnglishFallback[key];
@@ -133,10 +136,22 @@ class NautermLocalizations {
       if (asset != 'assets/i18n/en.json')
         rootBundle.loadString('assets/i18n/en.json'),
     ]);
-    final decoded = jsonDecode(loaded.first) as Map<String, dynamic>;
+    return parse(
+      locale,
+      loaded.first,
+      englishJson: loaded.length == 1 ? loaded.first : loaded.last,
+    );
+  }
+
+  @visibleForTesting
+  static NautermLocalizations parse(
+    Locale locale,
+    String localizedJson, {
+    String? englishJson,
+  }) {
+    final decoded = jsonDecode(localizedJson) as Map<String, dynamic>;
     final englishDecoded =
-        jsonDecode(loaded.length == 1 ? loaded.first : loaded.last)
-            as Map<String, dynamic>;
+        jsonDecode(englishJson ?? localizedJson) as Map<String, dynamic>;
     final messages = <String, String>{};
     for (final entry in decoded.entries) {
       if (entry.key != '_patterns' && entry.value is String) {
