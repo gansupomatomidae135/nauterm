@@ -1021,7 +1021,8 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      tr(text),
+      context.tr(text),
+      key: ValueKey('workspace-section-title:$text'),
       style: TextStyle(
         color: _text,
         fontSize: NautermFontSizes.labelLarge,

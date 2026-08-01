@@ -1175,6 +1175,36 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('workspace section title follows language changes', (
+    WidgetTester tester,
+  ) async {
+    final english = NautermLocalizations.current;
+    await tester.runAsync(
+      () => NautermLocalizations.load(const Locale('zh', 'CN')),
+    );
+    addTearDown(() {
+      setAppLanguage(AppLanguage.english);
+      NautermLocalizations.current = english;
+    });
+
+    await tester.pumpWidget(NautermApp(onOpenSettings: () {}));
+    await tester.tap(find.text('Known Hosts'));
+    await tester.pump();
+
+    final sectionTitle = find.byKey(
+      const ValueKey('workspace-section-title:Known Hosts'),
+    );
+    expect(tester.widget<Text>(sectionTitle).data, 'Known Hosts');
+
+    setAppLanguage(AppLanguage.simplifiedChinese);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+
+    expect(tester.widget<Text>(sectionTitle).data, '已知主机');
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('workspace chrome renders in Simplified Chinese', (
     WidgetTester tester,
   ) async {
@@ -2023,6 +2053,51 @@ void main() {
 
     final filter = tester.widget<TextField>(find.byType(TextField).first);
     expect(filter.controller?.text, 'needle');
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('open SFTP actions menu follows language changes', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    const channel = MethodChannel('com.korvect.nauterm/file_drop');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (_) async => null);
+    addTearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+    });
+
+    final english = NautermLocalizations.current;
+    await tester.runAsync(
+      () => NautermLocalizations.load(const Locale('zh', 'CN')),
+    );
+    setAppLanguage(AppLanguage.simplifiedChinese);
+    addTearDown(() {
+      setAppLanguage(AppLanguage.english);
+      NautermLocalizations.current = english;
+    });
+
+    await tester.pumpWidget(NautermApp(onOpenSettings: () {}));
+    await _sendSelectTabShortcut(tester, LogicalKeyboardKey.digit2);
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.tap(find.byKey(const ValueKey('sftp-empty-use-local-button')));
+    await tester.pump(const Duration(milliseconds: 200));
+
+    await tester.tap(find.text('操作').first);
+    await tester.pump();
+    expect(find.text('新建文件夹'), findsOneWidget);
+
+    setAppLanguage(AppLanguage.english);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+
+    expect(find.text('New Folder'), findsOneWidget);
+    expect(find.text('新建文件夹'), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });

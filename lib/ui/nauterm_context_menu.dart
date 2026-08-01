@@ -1074,7 +1074,7 @@ class _NautermContextMenuItemState<T>
           ],
           Expanded(
             child: Text(
-              tr(entry.label),
+              context.tr(entry.label),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

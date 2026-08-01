@@ -274,22 +274,19 @@ List<_SftpMenuEntry> _sftpActionMenuEntries({
         ),
       _sftpMenuItem(
         _SftpAction.copyToTarget,
-        tr('sftp.action.download', fallback: 'Download'),
+        'sftp.action.download',
         enabled: hasSelection,
       ),
-      _sftpMenuItem(
-        _SftpAction.uploadFiles,
-        tr('sftp.action.upload', fallback: 'Upload...'),
-      ),
+      _sftpMenuItem(_SftpAction.uploadFiles, 'sftp.action.upload'),
       _sftpMenuItem(_SftpAction.rename, 'Rename', enabled: hasSelection),
       _sftpMenuItem(
         _SftpAction.moveTo,
-        tr('sftp.action.moveTo', fallback: 'Move to...'),
+        'sftp.action.moveTo',
         enabled: hasSelection,
       ),
       _sftpMenuItem(
         _SftpAction.copyTo,
-        tr('sftp.action.copyTo', fallback: 'Copy to...'),
+        'sftp.action.copyTo',
         enabled: hasSelection,
       ),
       _sftpMenuItem(
@@ -299,10 +296,7 @@ List<_SftpMenuEntry> _sftpActionMenuEntries({
         destructive: true,
       ),
       _sftpMenuItem(_SftpAction.refresh, 'Refresh'),
-      _sftpMenuItem(
-        _SftpAction.newFolder,
-        tr('sftp.action.newFolder', fallback: 'New Folder'),
-      ),
+      _sftpMenuItem(_SftpAction.newFolder, 'sftp.action.newFolder'),
       _sudoSftpMenu(
         children: [
           _sftpMenuItem(_SftpAction.sudoOpen, 'Open', enabled: hasSelection),
@@ -314,13 +308,10 @@ List<_SftpMenuEntry> _sftpActionMenuEntries({
             ),
           _sftpMenuItem(
             _SftpAction.sudoDownload,
-            tr('sftp.action.download', fallback: 'Download'),
+            'sftp.action.download',
             enabled: hasSelection,
           ),
-          _sftpMenuItem(
-            _SftpAction.sudoUpload,
-            tr('sftp.action.upload', fallback: 'Upload...'),
-          ),
+          _sftpMenuItem(_SftpAction.sudoUpload, 'sftp.action.upload'),
           _sftpMenuItem(
             _SftpAction.sudoRename,
             'Rename',
@@ -328,12 +319,12 @@ List<_SftpMenuEntry> _sftpActionMenuEntries({
           ),
           _sftpMenuItem(
             _SftpAction.sudoMoveTo,
-            tr('sftp.action.moveTo', fallback: 'Move to...'),
+            'sftp.action.moveTo',
             enabled: hasSelection,
           ),
           _sftpMenuItem(
             _SftpAction.sudoCopyTo,
-            tr('sftp.action.copyTo', fallback: 'Copy to...'),
+            'sftp.action.copyTo',
             enabled: hasSelection,
           ),
           _sftpMenuItem(
@@ -342,10 +333,7 @@ List<_SftpMenuEntry> _sftpActionMenuEntries({
             enabled: hasSelection,
             destructive: true,
           ),
-          _sftpMenuItem(
-            _SftpAction.sudoNewFolder,
-            tr('sftp.action.newFolder', fallback: 'New Folder'),
-          ),
+          _sftpMenuItem(_SftpAction.sudoNewFolder, 'sftp.action.newFolder'),
         ],
       ),
       _sftpMenuItem(
@@ -362,10 +350,7 @@ List<_SftpMenuEntry> _sftpActionMenuEntries({
     if (!selectionIsFile || selectionCanOpenWithSystemDefault)
       _sftpMenuItem(_SftpAction.open, 'Open', enabled: hasSelection),
     _sftpMenuItem(_SftpAction.refresh, 'Refresh'),
-    _sftpMenuItem(
-      _SftpAction.newFolder,
-      tr('sftp.action.newFolder', fallback: 'New Folder'),
-    ),
+    _sftpMenuItem(_SftpAction.newFolder, 'sftp.action.newFolder'),
     _sftpMenuItem(
       _SftpAction.showHiddenFiles,
       showHiddenFiles ? 'Hide Hidden Files' : 'Show Hidden Files',
@@ -401,22 +386,19 @@ List<_SftpMenuEntry> _sftpRowMenuEntries(
         ),
       _sftpMenuItem(
         _SftpAction.copyToTarget,
-        tr('sftp.action.download', fallback: 'Download'),
+        'sftp.action.download',
         enabled: !entry.isParent,
       ),
-      _sftpMenuItem(
-        _SftpAction.uploadFiles,
-        tr('sftp.action.upload', fallback: 'Upload...'),
-      ),
+      _sftpMenuItem(_SftpAction.uploadFiles, 'sftp.action.upload'),
       _sftpMenuItem(_SftpAction.rename, 'Rename', enabled: !entry.isParent),
       _sftpMenuItem(
         _SftpAction.moveTo,
-        tr('sftp.action.moveTo', fallback: 'Move to...'),
+        'sftp.action.moveTo',
         enabled: !entry.isParent,
       ),
       _sftpMenuItem(
         _SftpAction.copyTo,
-        tr('sftp.action.copyTo', fallback: 'Copy to...'),
+        'sftp.action.copyTo',
         enabled: !entry.isParent,
       ),
       _sftpMenuItem(
@@ -426,10 +408,7 @@ List<_SftpMenuEntry> _sftpRowMenuEntries(
         destructive: true,
       ),
       _sftpMenuItem(_SftpAction.refresh, 'Refresh'),
-      _sftpMenuItem(
-        _SftpAction.newFolder,
-        tr('sftp.action.newFolder', fallback: 'New Folder'),
-      ),
+      _sftpMenuItem(_SftpAction.newFolder, 'sftp.action.newFolder'),
       _sudoSftpMenu(
         children: [
           _sftpMenuItem(_SftpAction.sudoOpen, 'Open'),
@@ -444,28 +423,13 @@ List<_SftpMenuEntry> _sftpRowMenuEntries(
               'Open with SSH Editor',
               enabled: canOpenFile,
             ),
-          _sftpMenuItem(
-            _SftpAction.sudoDownload,
-            tr('sftp.action.download', fallback: 'Download'),
-          ),
-          _sftpMenuItem(
-            _SftpAction.sudoUpload,
-            tr('sftp.action.upload', fallback: 'Upload...'),
-          ),
+          _sftpMenuItem(_SftpAction.sudoDownload, 'sftp.action.download'),
+          _sftpMenuItem(_SftpAction.sudoUpload, 'sftp.action.upload'),
           _sftpMenuItem(_SftpAction.sudoRename, 'Rename'),
-          _sftpMenuItem(
-            _SftpAction.sudoMoveTo,
-            tr('sftp.action.moveTo', fallback: 'Move to...'),
-          ),
-          _sftpMenuItem(
-            _SftpAction.sudoCopyTo,
-            tr('sftp.action.copyTo', fallback: 'Copy to...'),
-          ),
+          _sftpMenuItem(_SftpAction.sudoMoveTo, 'sftp.action.moveTo'),
+          _sftpMenuItem(_SftpAction.sudoCopyTo, 'sftp.action.copyTo'),
           _sftpMenuItem(_SftpAction.sudoDelete, 'Delete', destructive: true),
-          _sftpMenuItem(
-            _SftpAction.sudoNewFolder,
-            tr('sftp.action.newFolder', fallback: 'New Folder'),
-          ),
+          _sftpMenuItem(_SftpAction.sudoNewFolder, 'sftp.action.newFolder'),
         ],
       ),
     ];
@@ -476,10 +440,7 @@ List<_SftpMenuEntry> _sftpRowMenuEntries(
       _sftpMenuItem(_SftpAction.open, 'Open', enabled: !entry.isParent),
     _sftpMenuItem(_SftpAction.openWith, 'Open With', enabled: canOpenFile),
     _sftpMenuItem(_SftpAction.refresh, 'Refresh'),
-    _sftpMenuItem(
-      _SftpAction.newFolder,
-      tr('sftp.action.newFolder', fallback: 'New Folder'),
-    ),
+    _sftpMenuItem(_SftpAction.newFolder, 'sftp.action.newFolder'),
   ];
 }
 
@@ -502,7 +463,7 @@ _SftpMenuEntry _sftpMenuItem(
 _SftpMenuEntry _sudoSftpMenu({required List<_SftpMenuEntry> children}) {
   return _sftpMenuItem(
     _SftpAction.withSudo,
-    tr('sftp.action.withSudo', fallback: 'With sudo...'),
+    'sftp.action.withSudo',
     destructive: true,
     children: [
       for (final child in children)
