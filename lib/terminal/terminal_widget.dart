@@ -1319,6 +1319,15 @@ class _TerminalWidgetState extends State<TerminalWidget> with TextInputClient {
 
   Widget _buildSearchOverlay() {
     final query = _searchController.text;
+    final theme = widget.theme;
+    final foreground = theme.primary.foreground;
+    final dark = theme.type == TerminalThemeType.dark;
+    final background = Color.lerp(
+      theme.primary.background,
+      foreground,
+      dark ? 0.045 : 0.025,
+    )!;
+    final mutedForeground = foreground.withValues(alpha: 0.58);
     final statusText = query.isEmpty
         ? ''
         : _searchHasResult
@@ -1327,8 +1336,8 @@ class _TerminalWidgetState extends State<TerminalWidget> with TextInputClient {
         ? 'Error'
         : 'No results';
     final statusColor = _searchHasResult
-        ? const Color(0xff3f5660)
-        : const Color(0xffd24135);
+        ? theme.primary.accent
+        : theme.normal.red;
 
     return Positioned(
       top: 10,
@@ -1342,94 +1351,167 @@ class _TerminalWidgetState extends State<TerminalWidget> with TextInputClient {
             onKeyEvent: _handleSearchOverlayKeyEvent,
             child: Material(
               color: Colors.transparent,
-              child: Container(
-                key: _searchOverlayKey,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-                decoration: BoxDecoration(
-                  color: const Color(0xfff8fbfb).withValues(alpha: 0.98),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xffd8e1e4)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.18),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
+              child: KeyedSubtree(
+                key: const ValueKey('terminal-search-overlay'),
+                child: Container(
+                  key: _searchOverlayKey,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: background,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: foreground.withValues(alpha: dark ? 0.18 : 0.14),
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.search_rounded,
-                      size: 18,
-                      color: Color(0xff718089),
-                    ),
-                    const SizedBox(width: 7),
-                    Expanded(
-                      child: SizedBox(
-                        height: 30,
-                        child: TextField(
-                          key: const ValueKey('terminal-search-field'),
-                          controller: _searchController,
-                          focusNode: _searchFocusNode,
-                          textAlignVertical: TextAlignVertical.center,
-                          textInputAction: TextInputAction.search,
-                          onSubmitted: (_) => _searchNext(),
-                          style: const TextStyle(
-                            color: Color(0xff102129),
-                            fontSize: 13,
-                            height: 1.25,
-                          ),
-                          decoration: InputDecoration(
-                            isDense: true,
-                            hintText: tr(
-                              'terminal.label.searchTerminal',
-                              fallback: 'Search terminal',
-                            ),
-                            hintStyle: TextStyle(color: Color(0xff8ea0a8)),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                          ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(
+                          alpha: dark ? 0.28 : 0.14,
                         ),
-                      ),
-                    ),
-                    if (statusText.isNotEmpty) ...[
-                      const SizedBox(width: 8),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 74),
-                        child: Text(
-                          statusText,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: statusColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
                       ),
                     ],
-                    const SizedBox(width: 4),
-                    _TerminalSearchButton(
-                      icon: Icons.keyboard_arrow_up_rounded,
-                      tooltip: tr(
-                        'common.action.previous',
-                        fallback: 'Previous',
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.search_rounded,
+                        size: 18,
+                        color: mutedForeground,
                       ),
-                      onPressed: query.isEmpty ? null : _searchPrevious,
-                    ),
-                    _TerminalSearchButton(
-                      icon: Icons.keyboard_arrow_down_rounded,
-                      tooltip: tr('common.action.next', fallback: 'Next'),
-                      onPressed: query.isEmpty ? null : _searchNext,
-                    ),
-                    _TerminalSearchButton(
-                      icon: Icons.close_rounded,
-                      tooltip: tr('common.action.close', fallback: 'Close'),
-                      onPressed: _hideSearch,
-                    ),
-                  ],
+                      const SizedBox(width: 7),
+                      Expanded(
+                        child: SizedBox(
+                          height: 28,
+                          child: Stack(
+                            alignment: Alignment.centerLeft,
+                            children: [
+                              Positioned.fill(
+                                child: IgnorePointer(
+                                  child: Opacity(
+                                    opacity: query.isEmpty ? 1 : 0,
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        tr(
+                                          'terminal.label.searchTerminal',
+                                          fallback: 'Search terminal',
+                                        ),
+                                        key: const ValueKey(
+                                          'terminal-search-placeholder',
+                                        ),
+                                        style: TextStyle(
+                                          color: foreground.withValues(
+                                            alpha: 0.48,
+                                          ),
+                                          fontSize: 13,
+                                          height: 1,
+                                          leadingDistribution:
+                                              TextLeadingDistribution.even,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Semantics(
+                                  label: tr(
+                                    'terminal.label.searchTerminal',
+                                    fallback: 'Search terminal',
+                                  ),
+                                  textField: true,
+                                  child: SizedBox(
+                                    height: 13,
+                                    child: EditableText(
+                                      key: const ValueKey(
+                                        'terminal-search-field',
+                                      ),
+                                      controller: _searchController,
+                                      focusNode: _searchFocusNode,
+                                      maxLines: 1,
+                                      textInputAction: TextInputAction.search,
+                                      onSubmitted: (_) => _searchNext(),
+                                      cursorColor: theme.primary.accent,
+                                      backgroundCursorColor: foreground
+                                          .withValues(alpha: 0.28),
+                                      selectionColor: theme.primary.accent
+                                          .withValues(alpha: 0.28),
+                                      cursorHeight: 13,
+                                      style: TextStyle(
+                                        color: foreground,
+                                        fontSize: 13,
+                                        height: 1,
+                                        leadingDistribution:
+                                            TextLeadingDistribution.even,
+                                      ),
+                                      strutStyle: const StrutStyle(
+                                        fontSize: 13,
+                                        height: 1,
+                                        forceStrutHeight: true,
+                                        leadingDistribution:
+                                            TextLeadingDistribution.even,
+                                      ),
+                                      scrollPadding: EdgeInsets.zero,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (statusText.isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 74),
+                          child: Text(
+                            statusText,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: statusColor,
+                              fontSize: 11,
+                              height: 1,
+                              leadingDistribution: TextLeadingDistribution.even,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(width: 4),
+                      _TerminalSearchButton(
+                        icon: Icons.keyboard_arrow_up_rounded,
+                        tooltip: tr(
+                          'common.action.previous',
+                          fallback: 'Previous',
+                        ),
+                        theme: theme,
+                        background: background,
+                        onPressed: _searchHasResult ? _searchPrevious : null,
+                      ),
+                      _TerminalSearchButton(
+                        icon: Icons.keyboard_arrow_down_rounded,
+                        tooltip: tr('common.action.next', fallback: 'Next'),
+                        theme: theme,
+                        background: background,
+                        onPressed: _searchHasResult ? _searchNext : null,
+                      ),
+                      _TerminalSearchButton(
+                        icon: Icons.close_rounded,
+                        tooltip: tr('common.action.close', fallback: 'Close'),
+                        theme: theme,
+                        background: background,
+                        onPressed: _hideSearch,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -2794,15 +2876,20 @@ class _TerminalSearchButton extends StatelessWidget {
   const _TerminalSearchButton({
     required this.icon,
     required this.tooltip,
+    required this.theme,
+    required this.background,
     required this.onPressed,
   });
 
   final IconData icon;
   final String tooltip;
+  final TerminalTheme theme;
+  final Color background;
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
+    final foreground = theme.primary.foreground;
     return Tooltip(
       message: tr(tooltip),
       waitDuration: const Duration(milliseconds: 450),
@@ -2812,13 +2899,16 @@ class _TerminalSearchButton extends StatelessWidget {
         child: IconButton(
           onPressed: onPressed,
           icon: Icon(icon, size: 18),
-          color: const Color(0xff41545c),
-          disabledColor: const Color(0xffb3c0c5),
+          color: foreground.withValues(alpha: 0.78),
+          disabledColor: foreground.withValues(alpha: 0.28),
           padding: EdgeInsets.zero,
           splashRadius: 16,
           style: IconButton.styleFrom(
             backgroundColor: Colors.transparent,
-            hoverColor: const Color(0xffe7eef1),
+            hoverColor: Color.alphaBlend(
+              foreground.withValues(alpha: 0.08),
+              background,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),

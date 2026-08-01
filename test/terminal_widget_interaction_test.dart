@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nauterm/terminal/terminal_driver.dart';
@@ -825,10 +826,20 @@ void main() {
 
     final searchField = find.byKey(const ValueKey('terminal-search-field'));
     expect(searchField, findsOneWidget);
+    final fieldFocusNode = tester.widget<EditableText>(searchField).focusNode;
 
     await tester.tap(searchField);
     await tester.pump();
     expect(tester.testTextInput.isVisible, isTrue);
+
+    tester.testTextInput.updateEditingValue(
+      const TextEditingValue(
+        text: 'n',
+        selection: TextSelection.collapsed(offset: 1),
+      ),
+    );
+    await tester.pump();
+    expect(fieldFocusNode.hasFocus, isTrue);
 
     tester.testTextInput.updateEditingValue(
       const TextEditingValue(
@@ -838,11 +849,96 @@ void main() {
     );
     await tester.pump();
 
-    final field = tester.widget<TextField>(searchField);
-    expect(field.controller?.text, 'needle');
-    expect(field.textAlignVertical, TextAlignVertical.center);
-    expect(field.decoration?.contentPadding, EdgeInsets.zero);
+    final field = tester.widget<EditableText>(searchField);
+    expect(field.controller.text, 'needle');
+    expect(fieldFocusNode.hasFocus, isTrue);
+    expect(field.expands, isFalse);
+    expect(field.maxLines, 1);
+    expect(field.style.height, 1);
+    expect(field.style.leadingDistribution, TextLeadingDistribution.even);
+    expect(field.strutStyle.forceStrutHeight, isTrue);
   });
+
+  testWidgets(
+    'search overlay follows the terminal theme and uses centered input',
+    (tester) async {
+      final controller = TerminalController(
+        driver: _SnapshotDriver(TerminalSnapshot.blank(columns: 80, rows: 8)),
+      );
+      addTearDown(controller.dispose);
+
+      await _pumpTerminal(tester, controller, theme: nysaDarkTerminalTheme);
+      await _sendShortcut(tester, LogicalKeyboardKey.keyF);
+      await tester.pump();
+      await tester.pump();
+
+      final overlay = find.byKey(const ValueKey('terminal-search-overlay'));
+      final searchField = find.byKey(const ValueKey('terminal-search-field'));
+      final hint = find.byKey(const ValueKey('terminal-search-placeholder'));
+      expect(overlay, findsOneWidget);
+      expect(searchField, findsOneWidget);
+      expect(hint, findsOneWidget);
+
+      final surface = tester
+          .widgetList<Container>(
+            find.descendant(of: overlay, matching: find.byType(Container)),
+          )
+          .singleWhere((container) => container.decoration is BoxDecoration);
+      final decoration = surface.decoration! as BoxDecoration;
+      final foreground = nysaDarkTerminalTheme.primary.foreground;
+      expect(
+        decoration.color,
+        Color.lerp(nysaDarkTerminalTheme.primary.background, foreground, 0.045),
+      );
+      expect(
+        (decoration.border! as Border).top.color,
+        foreground.withValues(alpha: 0.18),
+      );
+
+      final field = tester.widget<EditableText>(searchField);
+      expect(field.style.color, foreground);
+      expect(field.cursorColor, nysaDarkTerminalTheme.primary.accent);
+      expect(field.cursorHeight, 13);
+      final placeholder = tester.widget<Text>(hint);
+      expect(placeholder.style?.color, foreground.withValues(alpha: 0.48));
+      expect(
+        tester.getCenter(hint).dy,
+        closeTo(tester.getCenter(find.byIcon(Icons.search_rounded)).dy, 0.1),
+      );
+      expect(
+        tester.getCenter(searchField).dy,
+        closeTo(tester.getCenter(find.byIcon(Icons.search_rounded)).dy, 0.1),
+      );
+
+      RenderEditable? renderEditable;
+      void findRenderEditable(RenderObject renderObject) {
+        if (renderObject is RenderEditable) {
+          renderEditable = renderObject;
+          return;
+        }
+        renderObject.visitChildren(findRenderEditable);
+      }
+
+      findRenderEditable(tester.renderObject(searchField));
+      expect(renderEditable, isNotNull);
+      final caretRect = renderEditable!.getLocalRectForCaret(
+        const TextPosition(offset: 0),
+      );
+      final caretCenter = renderEditable!.localToGlobal(caretRect.center).dy;
+      expect(caretCenter, closeTo(tester.getCenter(hint).dy, 0.25));
+
+      await tester.enterText(searchField, 'not-present');
+      await tester.pump();
+      final previousButton = tester.widget<IconButton>(
+        find.widgetWithIcon(IconButton, Icons.keyboard_arrow_up_rounded),
+      );
+      final nextButton = tester.widget<IconButton>(
+        find.widgetWithIcon(IconButton, Icons.keyboard_arrow_down_rounded),
+      );
+      expect(previousButton.onPressed, isNull);
+      expect(nextButton.onPressed, isNull);
+    },
+  );
 
   testWidgets('macOS Control F is sent to the terminal instead of searching', (
     tester,
