@@ -106,6 +106,10 @@ jobs:
             linux_include+=('{"arch":"x86_64","runner":"ubuntu-24.04","deb_arch":"amd64","rpm_arch":"x86_64","appimage_arch":"x86_64","mosh_lib_dir":"third_party/nauterm_mosh_ffi/linux-x86_64"}')
           fi
 
+          if wants_platform linux && wants_arch arm64; then
+            linux_include+=('{"arch":"arm64","runner":"ubuntu-24.04-arm","deb_arch":"arm64","rpm_arch":"aarch64","appimage_arch":"aarch64","mosh_lib_dir":"third_party/nauterm_mosh_ffi/linux-arm64"}')
+          fi
+
           if wants_platform windows && wants_arch x86_64; then
             windows_enabled=true
           fi
@@ -232,9 +236,22 @@ jobs:
           echo "value=$(awk '/^version: / { split($2, parts, "+"); print parts[1]; exit }' pubspec.yaml)" >> "$GITHUB_OUTPUT"
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        if: matrix.arch == 'x86_64'
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
+
+      # Flutter has no arm64 Linux SDK bundle (flutter-action fails on arm64
+      # runners). `git clone` + bin/flutter self-bootstraps the per-arch Dart
+      # SDK and linux-arm64 engine, so the build runs natively. Verified on
+      # ubuntu-24.04-arm.
+      - name: Install Flutter (arm64-native via git clone)
+        if: matrix.arch == 'arm64'
+        run: |
+          git clone --depth 1 --branch "${FLUTTER_VERSION}" https://github.com/flutter/flutter.git "$HOME/flutter-sdk"
+          export PATH="$HOME/flutter-sdk/bin:$PATH"
+          echo "$HOME/flutter-sdk/bin" >> "$GITHUB_PATH"
+          flutter --version
 
       - name: Install build and packaging dependencies
         run: |

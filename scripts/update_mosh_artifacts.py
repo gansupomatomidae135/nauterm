@@ -21,6 +21,7 @@ TARGETS = {
     ("macos", "arm64"): ("macos-arm64", "libnauterm_mosh_ffi.dylib"),
     ("macos", "x86_64"): ("macos-x86_64", "libnauterm_mosh_ffi.dylib"),
     ("linux", "x86_64"): ("linux-x86_64", "libnauterm_mosh_ffi.so"),
+    ("linux", "arm64"): ("linux-arm64", "libnauterm_mosh_ffi.so"),
     ("windows", "x86_64"): ("windows-x86_64", "nauterm_mosh_ffi.dll"),
 }
 
