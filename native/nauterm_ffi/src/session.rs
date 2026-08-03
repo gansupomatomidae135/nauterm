@@ -483,14 +483,24 @@ impl SessionManager {
         ) {
             Ok(mosh) => self.insert(engine, SessionTransport::Mosh(mosh), options),
             Err(error) => {
-                engine.write_bytes(
-                    format!(
-                        "Mosh session {username}@{host}:{port}\r\nFailed to start Mosh transport: {error}\r\n"
-                    )
-                    .as_bytes(),
-                );
+                let mut initial_events = error.events;
+                if initial_events.is_empty() {
+                    initial_events.push(
+                        SessionEvent::new(
+                            "error",
+                            format!("Failed to start Mosh transport: {}", error.message),
+                        )
+                        .with_host_port(host, port)
+                        .with_username(username),
+                    );
+                }
                 engine.mark_exited();
-                self.insert(engine, SessionTransport::Disconnected, options)
+                self.insert_with_events(
+                    engine,
+                    SessionTransport::Disconnected,
+                    options,
+                    initial_events,
+                )
             }
         }
     }
@@ -686,14 +696,20 @@ impl SessionManager {
             Err(error) => {
                 session.transport = SessionTransport::Disconnected;
                 session.engine.mark_exited();
-                session.events.push(
-                    SessionEvent::new(
-                        "error",
-                        format!("Failed to restart Mosh transport: {error}"),
-                    )
-                    .with_host_port(host, port)
-                    .with_username(username),
-                );
+                if error.events.is_empty() {
+                    session.events.push(
+                        SessionEvent::new(
+                            "error",
+                            format!("Failed to restart Mosh transport: {}", error.message),
+                        )
+                        .with_host_port(host, port)
+                        .with_username(username),
+                    );
+                } else {
+                    for event in error.events {
+                        session.events.push(event);
+                    }
+                }
             }
         }
         true

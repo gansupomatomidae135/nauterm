@@ -1073,11 +1073,11 @@ pub(crate) async fn start_mosh_server(
     host_key_trust_mode: HostKeyTrustMode,
     server_command: &MoshServerCommand,
     terminal_options: &TerminalOptions,
-) -> Result<MoshSshBootstrap, String> {
+) -> Result<MoshSshBootstrap, (String, Vec<SessionEvent>)> {
     let config = ssh_client_config();
     let events = Arc::new(Mutex::new(vec![SessionEvent::new(
-        "mosh_bootstrap_start",
-        format!("Starting Mosh through SSH on {username}@{host}:{port}."),
+        "connect_start",
+        format!("Connecting to {username}@{host}:{port}."),
     )
     .with_host_port(host, port)
     .with_username(username)]));
@@ -1164,7 +1164,11 @@ pub(crate) async fn start_mosh_server(
                     .with_host_port(host, port)
                     .with_username(username),
             );
-            Err(error)
+            let captured = events
+                .lock()
+                .map(|events| events.clone())
+                .unwrap_or_default();
+            Err((error, captured))
         }
     }
 }

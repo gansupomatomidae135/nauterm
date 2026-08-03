@@ -233,6 +233,20 @@ impl std::fmt::Display for MoshError {
 
 impl std::error::Error for MoshError {}
 
+pub(crate) struct MoshConnectError {
+    pub message: String,
+    pub events: Vec<SessionEvent>,
+}
+
+impl From<io::Error> for MoshConnectError {
+    fn from(error: io::Error) -> Self {
+        Self {
+            message: error.to_string(),
+            events: Vec::new(),
+        }
+    }
+}
+
 impl MoshSessionTransport {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn connect(
@@ -248,30 +262,32 @@ impl MoshSessionTransport {
         host_key_trust_mode: HostKeyTrustMode,
         proxy: Option<SshProxyConfig>,
         server_command: MoshServerCommand,
-    ) -> io::Result<Self> {
+    ) -> Result<Self, MoshConnectError> {
         let runtime = tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()
-            .map_err(|error| {
-                io::Error::other(format!(
-                    "failed to start Mosh SSH bootstrap runtime: {error}"
-                ))
+            .map_err(|error| MoshConnectError {
+                message: format!("failed to start Mosh SSH bootstrap runtime: {error}"),
+                events: Vec::new(),
             })?;
-        let bootstrap = runtime
-            .block_on(start_mosh_server(
-                host,
-                port,
-                username,
-                password,
-                private_key,
-                passphrase,
-                known_hosts_path,
-                proxy.as_ref(),
-                host_key_trust_mode,
-                &server_command,
-                terminal_options,
-            ))
-            .map_err(io::Error::other)?;
+        let bootstrap = match runtime.block_on(start_mosh_server(
+            host,
+            port,
+            username,
+            password,
+            private_key,
+            passphrase,
+            known_hosts_path,
+            proxy.as_ref(),
+            host_key_trust_mode,
+            &server_command,
+            terminal_options,
+        )) {
+            Ok(bootstrap) => bootstrap,
+            Err((message, events)) => {
+                return Err(MoshConnectError { message, events });
+            }
+        };
         let library = MoshFfiLibrary::load()?;
         let native_host = CString::new(bootstrap.udp_host.clone())
             .map_err(|error| io::Error::other(error.to_string()))?;
@@ -282,7 +298,7 @@ impl MoshSessionTransport {
         let mut bootstrap_key = bootstrap.bootstrap.key.into_bytes();
         if bootstrap_key.contains(&0) {
             bootstrap_key.zeroize();
-            return Err(io::Error::other("invalid Mosh bootstrap key"));
+            return Err(io::Error::other("invalid Mosh bootstrap key").into());
         }
         bootstrap_key.push(0);
         let result = unsafe {
@@ -304,12 +320,24 @@ impl MoshSessionTransport {
                 "failed to create Mosh transport".to_owned()
             } else {
                 error
-            }));
+            })
+            .into());
         }
+        let mut events = bootstrap.events;
+        events.push(
+            SessionEvent::new(
+                "connected",
+                format!(
+                    "SSH connection established and Mosh session connected to {username}@{host}."
+                ),
+            )
+            .with_host_port(host, port)
+            .with_username(username),
+        );
         Ok(Self {
             library,
             handle: result.handle,
-            pending_events: bootstrap.events,
+            pending_events: events,
         })
     }
 

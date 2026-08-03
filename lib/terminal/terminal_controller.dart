@@ -602,6 +602,8 @@ class TerminalController extends ChangeNotifier {
   bool _connectedCallbackNotified = false;
   bool _hasConnectedOnce = false;
   bool _reconnectBoundaryWritten = false;
+  static const _moshConnectedRevealDelay = Duration(milliseconds: 450);
+  Timer? _moshConnectedRevealTimer;
   bool _sensitiveInputInProgress = false;
   bool _activeExitRequested = false;
   String _pendingInputLine = '';
@@ -1890,6 +1892,11 @@ class TerminalController extends ChangeNotifier {
           message: event.message,
         );
       case TerminalConnectionEventKind.connected:
+        if (_remoteTransport == _RemoteTerminalTransport.mosh &&
+            _connectionStatus.phase == TerminalConnectionPhase.connecting) {
+          _scheduleMoshConnectedReveal(event.message);
+          return;
+        }
         _hasConnectedOnce = true;
         _reconnectBoundaryWritten = false;
         if (serialProfile != null) {
@@ -2225,6 +2232,28 @@ class TerminalController extends ChangeNotifier {
 
   bool _startupSnippetSent = false;
 
+  void _scheduleMoshConnectedReveal(String message) {
+    if (_moshConnectedRevealTimer != null) return;
+    _moshConnectedRevealTimer = Timer(_moshConnectedRevealDelay, () {
+      _moshConnectedRevealTimer = null;
+      if (_disposed) return;
+      _hasConnectedOnce = true;
+      _reconnectBoundaryWritten = false;
+      _connectionStatus = TerminalConnectionStatus(
+        phase: TerminalConnectionPhase.connected,
+        message: message.isNotEmpty
+            ? message
+            : 'Connected to ${_sshProfile?.username}@${_sshProfile?.host}.',
+      );
+      if (!_connectedCallbackNotified) {
+        _connectedCallbackNotified = true;
+        _onConnected?.call();
+      }
+      _scheduleStartupSnippetIfNeeded();
+      notifyListeners();
+    });
+  }
+
   void _scheduleStartupSnippetIfNeeded() {
     if (_startupSnippetSent || _disposed) {
       return;
@@ -2265,6 +2294,8 @@ class TerminalController extends ChangeNotifier {
     _snapshotRefreshTimer = null;
     _moshNetworkRestoredTimer?.cancel();
     _moshNetworkRestoredTimer = null;
+    _moshConnectedRevealTimer?.cancel();
+    _moshConnectedRevealTimer = null;
     _flushCaptureSanitizer();
     _recorder?.finish(message: _connectionStatus.message);
     _driver.dispose();
