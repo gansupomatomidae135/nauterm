@@ -345,6 +345,7 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
   _ConnectionPageMode? _lastActualMode;
   Timer? _connectedRevealTimer;
   bool _revealConnected = false;
+  bool _syncingControllers = false;
 
   HostEntry? get _resolvedHost {
     final hostId =
@@ -372,6 +373,7 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
   }
 
   void _handlePasswordChanged() {
+    if (_syncingControllers) return;
     if (mounted && _authTab == _ConnectionAuthTab.password) {
       setState(() {});
     }
@@ -781,10 +783,12 @@ class _TerminalConnectionPageState extends State<_TerminalConnectionPage> {
 
     _lastProfile = profile;
     _lastPhase = phase;
+    _syncingControllers = true;
     _hostController.text = profile.host;
     _portController.text = profile.port.toString();
     _usernameController.text = profile.username;
     _passwordController.text = profile.password ?? '';
+    _syncingControllers = false;
     _selectedIdentityId = profile.identityId;
   }
 
